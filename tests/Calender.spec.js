@@ -1,5 +1,4 @@
 const { test, expect } = require('@playwright/test');
-const { TIMEOUT } = require('node:dns');
 
 //Select today's date
 test("Selecting Future date", async ({ page }) => {
@@ -119,17 +118,4 @@ test("Selecting date in bootstrap date picker", async ({ page }) => {
     await page.pause();
 });
 
-test.only("Selecting dates in makemytrip", async ({ page }) => {
 
-    await page.goto("https://www.makemytrip.com/",
-        {
-            waitUntil: "domcontentloaded",
-            timeout: 60000
-        }
-
-    );
-    await page.locator("span[data-cy='closeModal']").click();
-    // await page.locator("div[data-cy='outsideModal']").click();
-    await page.locator("#departure").click();
-    await page.pause();
-});
