@@ -133,3 +133,30 @@ Practice project focused on handling **iframes and nested frames** using **Playw
 - Assertions with `expect()`
 - `waitFor()`
 - Iframe identification using DevTools
+
+## Alerts
+
+Practice project focused on handling JavaScript alerts and dialogs using **Playwright**.
+
+### Scenarios Covered
+
+- **JavaScript Alert**
+  - Handle a simple alert using `dialog.accept()`.
+  - Verify the success message after accepting the alert.
+
+- **JavaScript Confirm**
+  - Accept the confirmation dialog using `dialog.accept()`.
+  - Dismiss the confirmation dialog using `dialog.dismiss()`.
+  - Verify the appropriate result message for both actions.
+
+- **JavaScript Prompt**
+  - Enter text into a prompt using `dialog.accept("Hello")`.
+  - Verify that the entered text is displayed correctly.
+
+### Concepts Practiced
+
+- `page.on("dialog")`
+- `dialog.accept()`
+- `dialog.dismiss()`
+- Passing text to a JavaScript prompt
+- Verifying application behavior after handling dialogs
