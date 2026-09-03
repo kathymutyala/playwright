@@ -246,3 +246,151 @@ const fileCount = await fileInput.evaluate((input) => input.files.length);
 
 expect(fileCount).toBe(0);
 ```
+
+### File Download in Playwright
+
+Practiced file download automation using Playwright's `download` event.
+
+### Topics Covered
+
+- Downloading a file from the current page
+- Waiting for the `download` event
+- Getting the temporary download path
+- Getting the suggested filename
+- Saving downloaded files to a specific folder
+- Handling downloads from a new tab/window
+- Using the `popup` event before handling downloads
+- Verifying whether a download failed
+
+---
+
+### 1. Downloading a File from the Current Page
+
+When clicking a link triggers a download, we should start listening for the `download` event **before** clicking the download link.
+
+```javascript
+const downloadPromise = page.waitForEvent("download");
+
+await page.locator("a[href='download/upload-me.txt']").click();
+
+const download = await downloadPromise;
+```
+
+---
+
+### 2. Getting the Download Path
+
+Playwright temporarily stores downloaded files. We can get the temporary file path using:
+
+```javascript
+const filePath = await download.path();
+console.log(filePath);
+```
+
+> The path returned by `download.path()` is a temporary location.
+
+---
+
+### 3. Getting the Suggested Filename
+
+We can get the original filename suggested by the browser using:
+
+```javascript
+console.log(download.suggestedFilename());
+```
+
+Example:
+
+```javascript
+const filename = download.suggestedFilename();
+```
+
+---
+
+### 4. Saving the Downloaded File
+
+To permanently save the downloaded file to a specific location, use `saveAs()`.
+
+```javascript
+await download.saveAs("downloads/" + download.suggestedFilename());
+```
+
+This saves the file inside the `downloads` folder.
+
+---
+
+### 5. Downloading a File from a New Tab or Window
+
+Sometimes clicking a button opens a new tab or window, and the download happens on that new page.
+
+In this case:
+
+1. Wait for the `popup` event.
+2. Click the button that opens the new page.
+3. Get the new page.
+4. Wait for the page to load.
+5. Listen for the `download` event on the new page.
+6. Click the download link.
+
+Example:
+
+```javascript
+const popupPromise = page.waitForEvent("popup");
+
+await page
+  .getByRole("button", {
+    name: "Go to Download Page",
+  })
+  .click();
+
+const newPage = await popupPromise;
+
+await newPage.waitForLoadState();
+
+const downloadPromise = newPage.waitForEvent("download");
+
+await newPage.locator("a[href='download/upload-me.txt']").click();
+
+const download = await downloadPromise;
+
+await download.saveAs("downloads/upload-me.txt");
+```
+
+### Important
+
+The `download` event must be listened for on the page where the download actually happens.
+
+- Download happens on the current page → use `page.waitForEvent("download")`
+- Download happens on a popup/new tab → use `newPage.waitForEvent("download")`
+
+---
+
+### 6. Verifying That the Download Was Successful
+
+Playwright provides the `failure()` method to check whether a download failed.
+
+```javascript
+const downloadPromise = page.waitForEvent("download");
+
+await page
+  .getByRole("button", {
+    name: "Download Practice File",
+  })
+  .click();
+
+const download = await downloadPromise;
+
+expect(await download.failure()).toBeNull();
+```
+
+If the download is successful:
+
+```javascript
+await download.failure();
+```
+
+returns:
+
+```javascript
+null;
+```
