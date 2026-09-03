@@ -160,3 +160,89 @@ Practice project focused on handling JavaScript alerts and dialogs using **Playw
 - `dialog.dismiss()`
 - Passing text to a JavaScript prompt
 - Verifying application behavior after handling dialogs
+
+### File Upload in Playwright
+
+Practiced file upload automation using Playwright's `setInputFiles()` method.
+
+### Topics Covered
+
+- Single file upload
+- Uploading a file using a relative path
+- Uploading a file using an absolute path
+- Using `path.join()` with `__dirname`
+- Multiple file upload
+- Clearing selected files
+- Verifying uploaded/selected files
+
+### Single File Upload
+
+Playwright provides `setInputFiles()` to upload a file directly to a file input.
+
+```javascript
+await page.locator("#file-upload").setInputFiles("test-data/sample.txt");
+```
+
+### Absolute File Path
+
+Used Node.js `path` module with `__dirname` to create an absolute file path.
+
+```javascript
+const path = require("path");
+
+const filePath = path.join(__dirname, "../test-data/sample.txt");
+
+await page.locator("#file-upload").setInputFiles(filePath);
+```
+
+### Multiple File Upload
+
+Multiple files can be uploaded by passing an array of file paths to `setInputFiles()`.
+
+```javascript
+const filePath1 = path.join(__dirname, "../test-data/sample.txt");
+
+const filePath2 = path.join(__dirname, "../test-data/sample1.txt");
+
+const fileInput = page.locator("#file-upload");
+
+await fileInput.setInputFiles([filePath1, filePath2]);
+```
+
+### Verify Multiple Files
+
+The selected files can be verified using the `files` property of the file input.
+
+#### Verify File Count
+
+```javascript
+const fileCount = await fileInput.evaluate((input) => input.files.length);
+
+expect(fileCount).toBe(2);
+```
+
+#### Verify File Names
+
+```javascript
+const fileNames = await fileInput.evaluate((input) =>
+  Array.from(input.files).map((file) => file.name),
+);
+
+expect(fileNames).toEqual(["sample.txt", "sample1.txt"]);
+```
+
+### Clear Selected Files
+
+`setInputFiles([])` can be used to clear all selected files.
+
+```javascript
+await fileInput.setInputFiles([]);
+```
+
+Verify that the files have been cleared:
+
+```javascript
+const fileCount = await fileInput.evaluate((input) => input.files.length);
+
+expect(fileCount).toBe(0);
+```
